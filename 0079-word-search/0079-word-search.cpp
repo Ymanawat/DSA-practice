@@ -1,43 +1,28 @@
 class Solution {
-private:
-    bool existHelper(vector<vector<char>>& board, string& word, int row, int col, int index) {
-        if (index == word.length()) {
-            return true;
+public:
+    bool dfs (vector<vector<char>>& board, string &word, int i, int j, int s, int n, int m, int *rowdir, int *coldir){
+        
+        if(s==word.size()) return true;
+        if(i<0 || j<0 || i>=n ||j >=m ) return false;
+        if(board[i][j]!=word[s]) return false;
+        board[i][j] = '$';
+        for(int k = 0; k<4; k++){
+            if(dfs(board, word, i+rowdir[k], j+coldir[k], s+1, n, m, rowdir, coldir))return true;
         }
-        
-        int m = board.size();
-        int n = board[0].size();
-        
-        if (row < 0 || row >= m || col < 0 || col >= n || board[row][col] != word[index]) {
-            return false;
-        }
-        
-        char original = board[row][col];
-        board[row][col] = '#';
-        
-        if (existHelper(board, word, row + 1, col, index + 1) ||
-            existHelper(board, word, row - 1, col, index + 1) ||
-            existHelper(board, word, row, col + 1, index + 1) ||
-            existHelper(board, word, row, col - 1, index + 1)) {
-            return true;
-        }
-        
-        board[row][col] = original;
+        board[i][j] = word[s];
         return false;
     }
-    
-public:
+
     bool exist(vector<vector<char>>& board, string word) {
-        int m = board.size();
-        int n = board[0].size();
-        
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j < n; j++) {
-                if (board[i][j] == word[0] && existHelper(board, word, i, j, 0)) {
-                    return true;
-                }
-            }
-        }
+        int n = board.size();
+        int m = board[0].size();
+
+        int rowdir[] = {0, -1, 0, +1};
+        int coldir[] = {+1, 0, -1, 0};
+
+        for (int i = 0; i < n; ++i)
+            for (int j = 0; j < m; ++j)
+                if (dfs(board, word, i, j, 0, n, m, rowdir, coldir)) return true;
         
         return false;
     }
